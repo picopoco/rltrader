@@ -61,10 +61,7 @@ class Agent:
         self.ratio_hold = self.num_hold / int(
             self.portfolio_value / self.environment.get_price())
         self.ratio_portfolio_value = self.portfolio_value / self.base_portfolio_value
-        return (
-            self.ratio_hold,
-            self.ratio_portfolio_value
-        )
+        return self.ratio_hold, self.ratio_portfolio_value
 
     def decide_action(self, policy_network, sample, epsilon):
         confidence = 0.
@@ -82,7 +79,7 @@ class Agent:
     def validate_action(self, action):
         validity = True
         if action == Agent.ACTION_BUY:
-            # 적어도 1주를 살 수 있는지 확인
+            # 적어도 min_trading_unit 주를 살 수 있는지 확인
             if self.balance < self.environment.get_price() * (
                 1 + self.TRADING_CHARGE) * self.min_trading_unit:
                 validity = False
@@ -95,11 +92,11 @@ class Agent:
     def decide_trading_unit(self, confidence):
         if np.isnan(confidence):
             return self.min_trading_unit
-        added_traiding = max(min(
+        added_trading = max(min(
             int(confidence * (self.max_trading_unit - self.min_trading_unit)),
             self.max_trading_unit-self.min_trading_unit
         ), 0)
-        return self.min_trading_unit + added_traiding
+        return self.min_trading_unit + added_trading
 
     def act(self, action, confidence):
         if not self.validate_action(action):
