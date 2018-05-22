@@ -105,8 +105,8 @@ venv.bak/
 .mypy_cache/
 
 /models/
-/logs/
-/epoch_summary/
+logs/
+epoch_summary/
 /etc/
-/.idea/
+.idea/
 /.vscode/
