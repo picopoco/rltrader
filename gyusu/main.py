@@ -8,6 +8,10 @@ from policy_learner import PolicyLearner
 if __name__ == '__main__':
     stock_code = '005930'  # 삼성전자
 
+    # logs 폴더 존재하지 않으면 생성하기
+    if not os.path.exists(os.path.join(settings.BASE_DIR, 'logs')):
+        os.mkdir(os.path.join(settings.BASE_DIR, 'logs'))
+
     # 로그 기록
     log_dir = os.path.join(settings.BASE_DIR, 'logs/%s' % stock_code)
     timestr = settings.get_time_str()
@@ -23,10 +27,14 @@ if __name__ == '__main__':
         handlers=[file_handler, stream_handler], level=logging.DEBUG)
 
     # 주식 데이터 준비
+    # chart_data : 정제하지 않은 기본 데이터
     chart_data = data_manager.load_chart_data(
         os.path.join(settings.BASE_DIR,
                      'data/chart_data/{}.csv'.format(stock_code)))
+    # prep_data : window size 변경해가며 close_ma와 volume_ma 생성
     prep_data = data_manager.preprocess(chart_data)
+
+    # training_data : ohlcv간의 ratio를 계산하여 여러 training feature 생성
     training_data = data_manager.build_training_data(prep_data)
 
     # 기간 필터링
